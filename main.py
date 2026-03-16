@@ -1,12 +1,14 @@
 import time
 import numpy as np
 from tkinter import *
+from tkinter import ttk
 
-root = Tk()
+
 
 rowsGlobal=0
 colsGlobal=0
 matrix = np.empty((rowsGlobal, colsGlobal), dtype=object)
+s=""
 class Node:
     def __init__(self,row,col,val,ill,im):
         self.row=row
@@ -41,6 +43,15 @@ def generateMatrix(rows:int,cols:int):
     matrix[int(rowsGlobal/2)][int(colsGlobal/2)].val=0
     return matrix
 
+
+def generateMatrixStr(rows:int,cols:int):
+    global s,matrix,rowsGlobal,colsGlobal
+    rowsGlobal=rows
+    colsGlobal=cols
+    for i in range(rowsGlobal):
+        for j in range(colsGlobal):
+            s+=str(matrix[i][j])
+
 def printMatrix():
     global matrix, rowsGlobal, colsGlobal
     for i in range(rowsGlobal):
@@ -49,30 +60,46 @@ def printMatrix():
         print("\n")
     print("\n")
 
-def mainEvent():
-    global matrix, rowsGlobal, colsGlobal
+def printMatrixStr():
+    global lbl,matrix, rowsGlobal, colsGlobal
+    matrixStr=""
     for i in range(rowsGlobal):
         for j in range(colsGlobal):
-            if i==0 or j==0:
-                continue
-            if i==rowsGlobal-1 or j==colsGlobal-1:
-                continue
-            if matrix[i-1][j].getVal()==0 or matrix[i][j-1].getVal()==0 or matrix[i+1][j].getVal()==0 or matrix[i][j+1].getVal()==0:
-                if matrix[i][j].getVal()==1 and matrix[i][j].getIm()==4:
-                    matrix[i][j].val=2
-                    matrix[i][j].im=0
-                elif matrix[i][j].getVal()==1 and matrix[i][j].getIm()<4:
-                    matrix[i][j].increaceIm()
-                elif matrix[i][j].getVal()==0 and matrix[i][j].getIll()==6:
-                    matrix[i][j].val=1
-                    matrix[i][j].ill=0
-                elif (matrix[i][j].getVal()==2 or matrix[i][j].getVal()==0) and matrix[i][j].getIll()<6:
-                    matrix[i][j].val=0
-                    matrix[i][j].increaceIll()
-    printMatrix()
+            matrixStr+=str(matrix[i][j].getVal())+" "
+        matrixStr+="\n"    
+    lbl.configure(text=matrixStr)
+    
+def mainEvent():
+    global matrix, rowsGlobal, colsGlobal
+    while True:
+        for i in range(rowsGlobal):
+            for j in range(colsGlobal):
+                if i==0 or j==0:
+                    continue
+                if i==rowsGlobal-1 or j==colsGlobal-1:
+                    continue
+                if matrix[i-1][j].getVal()==0 or matrix[i][j-1].getVal()==0 or matrix[i+1][j].getVal()==0 or matrix[i][j+1].getVal()==0:
+                    if matrix[i][j].getVal()==1 and matrix[i][j].getIm()==4:
+                        matrix[i][j].val=2
+                        matrix[i][j].im=0
+                    elif matrix[i][j].getVal()==1 and matrix[i][j].getIm()<4:
+                        matrix[i][j].increaceIm()
+                    elif matrix[i][j].getVal()==0 and matrix[i][j].getIll()==6:
+                        matrix[i][j].val=1
+                        matrix[i][j].ill=0
+                    elif (matrix[i][j].getVal()==2 or matrix[i][j].getVal()==0) and matrix[i][j].getIll()<6:
+                        matrix[i][j].val=0
+                        matrix[i][j].increaceIll()
+        time.sleep(2)
+        printMatrixStr()
 
 generateMatrix(5,5)
-printMatrix()
-while True:
-    time.sleep(2)
-    mainEvent()
+root = Tk()
+root.geometry('1000x500')
+frm = ttk.Frame(root, padding=10)
+frm.pack()
+
+lbl=ttk.Label(frm, text="Hello World!")
+lbl.pack()
+ttk.Button(frm, text="Generate", command=mainEvent).pack()
+root.mainloop()
